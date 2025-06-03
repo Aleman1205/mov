@@ -1,19 +1,7 @@
-// src/firebase.ts
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-export { auth, db };
+VITE_FIREBASE_API_KEY=AIzaSyCZ4ZiW6fx_zxzDLZ7EEMf_n1UbCQLsjAw
+VITE_FIREBASE_AUTH_DOMAIN=mov-enterprise.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=mov-enterprise
+VITE_FIREBASE_STORAGE_BUCKET=mov-enterprise.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=885163778149
+VITE_FIREBASE_APP_ID=1:885163778149:web:60bbcdd8384ace0be0668c
+VITE_FIREBASE_MEASUREMENT_ID=G-7RVMCVF831
