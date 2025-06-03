@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Container from '../components/ui/Container';
 import Button from '../components/ui/Button';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase'; // Asegúrate de tener este archivo configurado
 
 const Signup: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -28,19 +31,21 @@ const Signup: React.FC = () => {
     setSuccess('');
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      // Crea usuario con Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+
+      const user = userCredential.user;
+
+      // Guarda rol en Firestore
+      await setDoc(doc(db, 'usuarios', user.uid), {
+        email: formData.email,
+        rol: formData.rol,
+        uid: user.uid,
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.detail || 'Error desconocido');
-      }
 
       setSuccess('Cuenta creada correctamente');
     } catch (err: any) {
@@ -59,10 +64,7 @@ const Signup: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Email
                 </label>
                 <input
@@ -78,10 +80,7 @@ const Signup: React.FC = () => {
               </div>
 
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Contraseña
                 </label>
                 <input
@@ -97,10 +96,7 @@ const Signup: React.FC = () => {
               </div>
 
               <div>
-                <label
-                  htmlFor="rol"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
+                <label htmlFor="rol" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Rol
                 </label>
                 <select
@@ -120,16 +116,11 @@ const Signup: React.FC = () => {
               </Button>
 
               {error && <p className="text-red-500 text-center">{error}</p>}
-              {success && (
-                <p className="text-green-500 text-center">{success}</p>
-              )}
+              {success && <p className="text-green-500 text-center">{success}</p>}
 
               <p className="text-center text-sm text-gray-600 dark:text-gray-400">
                 Ya tienes cuenta?{' '}
-                <Link
-                  to="/login"
-                  className="text-primary hover:text-primary/80 font-medium"
-                >
+                <Link to="/login" className="text-primary hover:text-primary/80 font-medium">
                   Login
                 </Link>
               </p>

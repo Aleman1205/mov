@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Container from '../components/ui/Container';
 import Button from '../components/ui/Button';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -25,29 +27,7 @@ const Login: React.FC = () => {
     setSuccess('');
 
     try {
-      const body = new URLSearchParams();
-      body.append('username', formData.email);
-      body.append('password', formData.password);
-
-      const response = await fetch('http://127.0.0.1:8000/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: body.toString(),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        const detail =
-          typeof result.detail === 'string'
-            ? result.detail
-            : JSON.stringify(result.detail);
-        throw new Error(detail || 'Error al iniciar sesión');
-      }
-
-      localStorage.setItem('token', result.access_token);
+      await signInWithEmailAndPassword(auth, formData.email, formData.password);
       setSuccess('Inicio de sesión exitoso');
 
       setTimeout(() => {
@@ -69,10 +49,7 @@ const Login: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Email
                 </label>
                 <input
@@ -88,10 +65,7 @@ const Login: React.FC = () => {
               </div>
 
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Contraseña
                 </label>
                 <input
@@ -111,16 +85,11 @@ const Login: React.FC = () => {
               </Button>
 
               {error && <p className="text-red-500 text-center">{error}</p>}
-              {success && (
-                <p className="text-green-500 text-center">{success}</p>
-              )}
+              {success && <p className="text-green-500 text-center">{success}</p>}
 
               <p className="text-center text-sm text-gray-600 dark:text-gray-400">
                 No tienes cuenta?{' '}
-                <Link
-                  to="/signup"
-                  className="text-primary hover:text-primary/80 font-medium"
-                >
+                <Link to="/signup" className="text-primary hover:text-primary/80 font-medium">
                   Crear una
                 </Link>
               </p>
